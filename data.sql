@@ -8,7 +8,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     shop_name VARCHAR(255),
     shop_logo VARCHAR(255),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at DATETIME DEFAULT NULL
 );
 
 -- Social Accounts
@@ -18,7 +18,7 @@ CREATE TABLE social_accounts (
     platform ENUM('facebook','tiktok') NOT NULL,
     account_name VARCHAR(255),
     access_token TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -36,7 +36,7 @@ CREATE TABLE customers (
     total_received DECIMAL(10,2) DEFAULT 0,
     total_spent DECIMAL(10,2) DEFAULT 0,
     status ENUM('normal','warning','blocked') DEFAULT 'normal',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -49,7 +49,7 @@ CREATE TABLE products (
     logo VARCHAR(255),
     unit VARCHAR(50),
     price DECIMAL(10,2),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
@@ -62,7 +62,7 @@ CREATE TABLE draft_orders (
     social_id VARCHAR(50),
     comment TEXT,
     status ENUM('pending','converted') DEFAULT 'pending',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (customer_id) REFERENCES customers(id)
 );
@@ -74,7 +74,7 @@ CREATE TABLE orders (
     customer_id INT,
     total DECIMAL(10,2) DEFAULT 0,
     status ENUM('active','cancelled') DEFAULT 'active',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (customer_id) REFERENCES customers(id)
 );
@@ -86,7 +86,7 @@ CREATE TABLE order_items (
     product_id INT NOT NULL,
     quantity INT DEFAULT 1,
     price DECIMAL(10,2),
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT NULL,
     FOREIGN KEY (order_id) REFERENCES orders(id),
     FOREIGN KEY (product_id) REFERENCES products(id)
 );
@@ -100,6 +100,6 @@ CREATE TABLE live_sessions (
     total_comments INT DEFAULT 0,
     total_orders INT DEFAULT 0,
     revenue DECIMAL(10,2) DEFAULT 0,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
