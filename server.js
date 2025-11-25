@@ -11,6 +11,7 @@ import productsRoutes from "./routes/products.js";
 import draftOrdersRoutes from "./routes/draftOrders.js";
 import ordersRoutes from "./routes/orders.js";
 import statisticsRoutes from "./routes/statistics.js";
+import liveTikTokRoutes from "./routes/liveTikTok.js";
 
 dotenv.config();
 const app = express();
@@ -27,6 +28,7 @@ app.use("/api/products", productsRoutes);
 app.use("/api/draft-orders", draftOrdersRoutes);
 app.use("/api/orders", ordersRoutes);
 app.use("/api/statistics", statisticsRoutes);
+app.use("/api/live-comments", liveTikTokRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
