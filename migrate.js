@@ -1,6 +1,8 @@
-// migrate.js
-const mysql = require("mysql2/promise");
-require("dotenv").config();
+// migrate.js (ESM)
+import mysql from "mysql2/promise";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 async function migrate() {
     const db = await mysql.createConnection({
@@ -8,7 +10,8 @@ async function migrate() {
         user: process.env.MYSQLUSER,
         password: process.env.MYSQLPASSWORD,
         database: process.env.MYSQLDATABASE,
-        port: process.env.MYSQLPORT
+        port: process.env.MYSQLPORT,
+        multipleStatements: true
     });
 
     console.log("🚀 Connected to MySQL Railway!");
@@ -121,8 +124,7 @@ async function migrate() {
 
     for (const query of queries) {
         await db.execute(query);
-        console.log("✔ Executed:");
-        console.log(query.split("(")[0]); // log tên bảng
+        console.log("✔ Executed:", query.split("(")[0].trim());
     }
 
     console.log("🎉 Database migration completed successfully!");
@@ -131,4 +133,5 @@ async function migrate() {
 
 migrate().catch(err => {
     console.error("❌ Migration failed:", err);
+    process.exit(1);
 });
