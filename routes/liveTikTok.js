@@ -1,24 +1,18 @@
-// routes/liveTikTok.js
-const express = require("express");
-const router = express.Router();
-const TikTokLive = require("tiktok-live-connector").default;
+import express from "express";
+import TikTokLive from "tiktok-live-connector";
 
-const activeSessions = {}; // giữ kết nối cho nhiều room
+const router = express.Router();
+const activeSessions = {};
 let commentsStore = {};
 
 router.get("/tiktok/:roomId", async (req, res) => {
     const roomId = req.params.roomId;
+    if (!roomId) return res.status(400).json({ error: "Missing roomId" });
 
-    if (!roomId) {
-        return res.status(400).json({ error: "Missing roomId" });
-    }
-
-    // Kiểm tra có session chưa
     if (activeSessions[roomId]) {
         return res.json({ message: "Already connected", roomId });
     }
 
-    // Tạo client Webcast
     const client = new TikTokLive(roomId, {
         enableExtendedGiftInfo: true,
         requestPollingInterval: 1000,
@@ -26,7 +20,6 @@ router.get("/tiktok/:roomId", async (req, res) => {
 
     activeSessions[roomId] = client;
 
-    // Listen events
     client.on("chat", (data) => {
         if (!commentsStore[roomId]) commentsStore[roomId] = [];
 
@@ -39,28 +32,17 @@ router.get("/tiktok/:roomId", async (req, res) => {
             timestamp: Date.now(),
         });
 
-        // giữ tối đa 200 comment
         if (commentsStore[roomId].length > 200) {
             commentsStore[roomId].shift();
         }
     });
 
-    client.on("gift", (data) => {
-        console.log(`[GIFT] ${data.uniqueId} sent ${data.giftName}`);
-    });
-
-    client.on("like", (data) => {
-        console.log(`[LIKE] ${data.uniqueId} sent like`);
-    });
-
     client.on("streamEnd", () => {
-        console.log("LIVE END");
         delete activeSessions[roomId];
     });
 
     try {
         await client.connect();
-        console.log("Connected to TikTok LIVE:", roomId);
         return res.json({ message: "connected", roomId });
     } catch (err) {
         return res.status(500).json({ error: err.message });
@@ -69,7 +51,7 @@ router.get("/tiktok/:roomId", async (req, res) => {
 
 router.get("/tiktok/:roomId/comments", (req, res) => {
     const roomId = req.params.roomId;
-    return res.json(commentsStore[roomId] || []);
+    res.json(commentsStore[roomId] || []);
 });
 
-module.exports = router;
+export default router;
